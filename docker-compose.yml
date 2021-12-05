@@ -1,0 +1,29 @@
+version: '3'
+services:
+  mysql_db:
+    image: mysql:8.0.21
+    environment:   # Set up mysql database name and password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: pharmacy
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    networks:
+      - app-tier
+
+  python_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql_db
+    networks:
+      - app-tier
+    restart: on-failure
+    links:
+      - mysql_db
+    command:
+      sh -c "python3 main.py"
+
+networks:
+  app-tier:
+    driver: bridge
